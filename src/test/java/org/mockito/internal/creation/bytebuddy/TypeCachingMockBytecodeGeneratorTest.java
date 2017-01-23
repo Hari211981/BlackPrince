@@ -1,13 +1,14 @@
 package org.mockito.internal.creation.bytebuddy;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.mock.SerializableMode;
-import org.mockitoutil.VmArgAssumptions;
-
 import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.WeakHashMap;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.mockito.mock.SerializableMode;
+import org.mockitoutil.RetryRule;
+import org.mockitoutil.VmArgAssumptions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.internal.creation.bytebuddy.MockFeatures.withMockFeatures;
@@ -15,6 +16,9 @@ import static org.mockitoutil.ClassLoaders.inMemoryClassLoader;
 import static org.mockitoutil.SimpleClassGenerator.makeMarkerInterface;
 
 public class TypeCachingMockBytecodeGeneratorTest {
+
+    @Rule
+    public RetryRule retryRule = RetryRule.attempts(4);
 
     @Before
     public void ensure_disable_gc_is_activated() throws Exception {
