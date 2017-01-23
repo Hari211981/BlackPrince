@@ -4,17 +4,21 @@
  */
 package org.concurrentmockito;
 
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 import org.mockito.MockitoTest;
-import org.mockito.internal.exceptions.ReporterTest;
 import org.mockito.exceptions.base.MockitoAssertionErrorTest;
 import org.mockito.exceptions.base.MockitoExceptionTest;
 import org.mockito.internal.AllInvocationsFinderTest;
 import org.mockito.internal.InvalidStateDetectionTest;
 import org.mockito.internal.creation.bytebuddy.TypeCachingMockBytecodeGeneratorTest;
+import org.mockito.internal.exceptions.ReporterTest;
 import org.mockito.internal.handler.MockHandlerImplTest;
 import org.mockito.internal.invocation.InvocationImplTest;
 import org.mockito.internal.invocation.InvocationMatcherTest;
@@ -50,19 +54,31 @@ import org.mockitousage.stacktrace.StackTraceFilteringTest;
 import org.mockitousage.stubbing.BasicStubbingTest;
 import org.mockitousage.stubbing.ReturningDefaultValuesTest;
 import org.mockitousage.stubbing.StubbingWithThrowablesTest;
-import org.mockitousage.verification.*;
+import org.mockitousage.verification.AtMostXVerificationTest;
+import org.mockitousage.verification.BasicVerificationInOrderTest;
+import org.mockitousage.verification.BasicVerificationTest;
+import org.mockitousage.verification.DescriptiveMessagesOnVerificationInOrderErrorsTest;
+import org.mockitousage.verification.DescriptiveMessagesWhenTimesXVerificationFailsTest;
+import org.mockitousage.verification.DescriptiveMessagesWhenVerificationFailsTest;
+import org.mockitousage.verification.ExactNumberOfTimesVerificationTest;
+import org.mockitousage.verification.NoMoreInteractionsVerificationTest;
+import org.mockitousage.verification.RelaxedVerificationInOrderTest;
+import org.mockitousage.verification.SelectedMocksInOrderVerificationTest;
+import org.mockitousage.verification.VerificationInOrderMixedWithOrdiraryVerificationTest;
+import org.mockitousage.verification.VerificationInOrderTest;
+import org.mockitousage.verification.VerificationOnMultipleMocksUsingMatchersTest;
+import org.mockitousage.verification.VerificationUsingMatchersTest;
 import org.mockitoutil.TestBase;
 
-import java.util.*;
-
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertFalse;
+import static java.lang.String.format;
+import static java.util.stream.Collectors.joining;
+import static org.assertj.core.api.Assertions.fail;
 
 public class ThreadsRunAllTestsHalfManualTest extends TestBase {
 
     private static class AllTestsRunner extends Thread {
 
-        private Set<Class<?>> failed = new HashSet<Class<?>>();
+        private Set<String> failed = new HashSet<>();
 
         public void run() {
             Result result = JUnitCore.runClasses(
@@ -123,20 +139,22 @@ public class ThreadsRunAllTestsHalfManualTest extends TestBase {
                     VerificationInOrderFromMultipleThreadsTest.class,
                     ResetTest.class,
                     ReturnsGenericDeepStubsTest.class
-                );
+            );
 
-                if (!result.wasSuccessful()) {
-                    System.err.println("Thread[" + Thread.currentThread().getId() + "]: error!");
-                    List<Failure> failures = result.getFailures();
-                    System.err.println(failures.size());
-                    for (Failure failure : failures) {
-                        System.err.println(failure.getTrace());
-                        failed.add(failure.getDescription().getTestClass());
-                    }
+            if (!result.wasSuccessful()) {
+                System.err.println("Thread[" + Thread.currentThread().getId() + "]: error!");
+                List<Failure> failures = result.getFailures();
+                System.err.println(failures.size());
+                for (Failure failure : failures) {
+                    failed.add(format("%s.%s%n%s",
+                                      failure.getDescription().getClassName(),
+                                      failure.getDescription().getMethodName(),
+                                      failure.getTrace()));
                 }
+            }
         }
 
-        public Set<Class<?>> getFailed() {
+        Set<String> getFailed() {
             return failed;
         }
     }
@@ -144,11 +162,14 @@ public class ThreadsRunAllTestsHalfManualTest extends TestBase {
     @Test
     public void shouldRunInMultipleThreads() throws Exception {
         //this test ALWAYS fails if there is a single failing unit
-        assertEquals("Run in multiple thread failed for tests", Collections.emptySet(), runInMultipleThreads(3));
+        Set<String> result = runInMultipleThreads(3);
+        if (result.size() > 0) {
+            fail("Run in multiple thread failed for the following tests :\n\n" + result.stream().collect(joining("\n\n")));
+        }
     }
 
-    public static Set<Class<?>> runInMultipleThreads(int numberOfThreads) throws Exception {
-        List<AllTestsRunner> threads = new LinkedList<AllTestsRunner>();
+    private static Set<String> runInMultipleThreads(int numberOfThreads) throws Exception {
+        List<AllTestsRunner> threads = new LinkedList<>();
         for (int i = 1; i <= numberOfThreads; i++) {
             threads.add(new AllTestsRunner());
         }
@@ -157,7 +178,7 @@ public class ThreadsRunAllTestsHalfManualTest extends TestBase {
             t.start();
         }
 
-        Set<Class<?>> failed = new HashSet<Class<?>>();
+        Set<String> failed = new HashSet<>();
         for (AllTestsRunner t : threads) {
             t.join();
             failed.addAll(t.getFailed());
@@ -169,9 +190,9 @@ public class ThreadsRunAllTestsHalfManualTest extends TestBase {
     public static void main(String[] args) throws Exception {
         int numberOfThreads = 20;
         long before = System.currentTimeMillis();
-        Set<Class<?>> failed = runInMultipleThreads(numberOfThreads);
+        Set<String> failed = runInMultipleThreads(numberOfThreads);
         long after = System.currentTimeMillis();
-        long executionTime = (after-before)/1000;
+        long executionTime = (after - before) / 1000;
         System.out.println("Finished tests in " + numberOfThreads + " threads in " + executionTime + " seconds. (" + failed.size() + " tests failed)");
     }
 }

@@ -39,12 +39,12 @@ public class RetryRule implements TestRule {
             return new Statement() {
                 @Override
                 public void evaluate() throws Throwable {
-                    for (int remainingAttempts = attempts; remainingAttempts > 0 ; remainingAttempts--) {
+                    for (int remainingAttempts = attempts; remainingAttempts >= 0 ; remainingAttempts--) {
                         try {
                             base.evaluate();
                         } catch (Throwable throwable) {
-                            if (remainingAttempts < 0) {
-                                throw new AssertionError(format("Tried this test + %d times and failed", attempts))
+                            if (remainingAttempts <= 0) {
+                                throw new AssertionError(format("Tried this test %d times and failed", attempts))
                                         .initCause(throwable);
                             }
                         }
