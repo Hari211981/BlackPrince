@@ -14,12 +14,15 @@ import org.mockito.internal.junit.UniversalTestListener;
 import org.mockito.internal.util.MockitoLogger;
 import org.mockito.quality.Strictness;
 
+import java.util.Collection;
+import java.util.List;
+
 public class DefaultMockitoSession implements MockitoSession {
 
-    private final Object testClassInstance;
+    private final List<?> testClassInstance;
     private final UniversalTestListener listener;
 
-    public DefaultMockitoSession(Object testClassInstance, Strictness strictness, MockitoLogger logger) {
+    public DefaultMockitoSession(List<?> testClassInstance, Strictness strictness, MockitoLogger logger) {
         this.testClassInstance = testClassInstance;
         listener = new UniversalTestListener(strictness, logger);
         try {
@@ -28,7 +31,11 @@ public class DefaultMockitoSession implements MockitoSession {
         } catch (RedundantListenerException e) {
             Reporter.unfinishedMockingSession();
         }
-        MockitoAnnotations.initMocks(testClassInstance);
+
+        for (Object testInstance:testClassInstance){
+            MockitoAnnotations.initMocks(testInstance);
+        }
+
     }
 
     public void finishMocking() {
@@ -43,7 +50,7 @@ public class DefaultMockitoSession implements MockitoSession {
                 return null;
             }
             public Object getTestClassInstance() {
-                return testClassInstance;
+                return testClassInstance.get(0);
             }
             public String getTestMethodName() {
                 return null;
