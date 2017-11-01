@@ -12,8 +12,6 @@ import org.mockito.internal.util.SimpleMockitoLogger;
 import org.mockito.quality.Strictness;
 import org.mockitousage.IMethods;
 
-import java.util.Collections;
-
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
