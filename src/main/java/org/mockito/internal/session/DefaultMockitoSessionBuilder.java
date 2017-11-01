@@ -15,7 +15,6 @@ import java.util.List;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.mockito.internal.util.Checks.checkItemsNotNull;
-import static org.mockito.internal.util.Checks.checkNotNull;
 import static org.mockito.quality.Strictness.STRICT_STUBS;
 
 public class DefaultMockitoSessionBuilder implements MockitoSessionBuilder {
