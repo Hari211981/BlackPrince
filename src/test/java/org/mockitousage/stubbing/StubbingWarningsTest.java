@@ -12,6 +12,9 @@ import org.mockito.internal.util.SimpleMockitoLogger;
 import org.mockito.quality.Strictness;
 import org.mockitousage.IMethods;
 
+import java.util.Collections;
+
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
 import static org.mockitoutil.TestBase.filterLineNo;
@@ -21,7 +24,7 @@ public class StubbingWarningsTest {
     @Mock IMethods mock;
 
     SimpleMockitoLogger logger = new SimpleMockitoLogger();
-    MockitoSession mockito = new DefaultMockitoSession(this, Strictness.WARN, logger);
+    MockitoSession mockito = new DefaultMockitoSession(singletonList(this), Strictness.WARN, logger);
 
     @Test public void few_interactions() throws Throwable {
         //when

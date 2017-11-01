@@ -14,16 +14,15 @@ import org.mockito.internal.junit.UniversalTestListener;
 import org.mockito.internal.util.MockitoLogger;
 import org.mockito.quality.Strictness;
 
-import java.util.Collection;
 import java.util.List;
 
 public class DefaultMockitoSession implements MockitoSession {
 
-    private final List<?> testClassInstance;
+    private final List<?> testClassInstances;
     private final UniversalTestListener listener;
 
     public DefaultMockitoSession(List<?> testClassInstance, Strictness strictness, MockitoLogger logger) {
-        this.testClassInstance = testClassInstance;
+        this.testClassInstances = testClassInstance;
         listener = new UniversalTestListener(strictness, logger);
         try {
             //So that the listener can capture mock creation events
@@ -50,7 +49,7 @@ public class DefaultMockitoSession implements MockitoSession {
                 return null;
             }
             public Object getTestClassInstance() {
-                return testClassInstance.get(0);
+                return testClassInstances.get(0);
             }
             public String getTestMethodName() {
                 return null;

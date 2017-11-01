@@ -6,41 +6,53 @@ package org.mockito.internal.session;
 
 import org.mockito.MockitoSession;
 import org.mockito.internal.framework.DefaultMockitoSession;
-import org.mockito.internal.util.Checks;
 import org.mockito.internal.util.ConsoleMockitoLogger;
 import org.mockito.quality.Strictness;
 import org.mockito.session.MockitoSessionBuilder;
 
-import java.util.LinkedList;
 import java.util.List;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static org.mockito.internal.util.Checks.checkItemsNotNull;
 import static org.mockito.internal.util.Checks.checkNotNull;
+import static org.mockito.quality.Strictness.STRICT_STUBS;
 
 public class DefaultMockitoSessionBuilder implements MockitoSessionBuilder {
 
-    private List<Object> testInstances = new LinkedList<Object>();
-    private Strictness strictness = Strictness.STRICT_STUBS;
+    private List<Object> testInstances = emptyList();
+    private Strictness strictness = STRICT_STUBS;
 
     @Override
-    public MockitoSessionBuilder initMocks(List<Object>  testClassInstance) {
-        checkItemsNotNull(testClassInstance,"testClassInstance");
-        this.testInstances=testClassInstance;
+    public MockitoSessionBuilder initTestInstances(List<Object> testClassInstance) {
+        checkItemsNotNull(testClassInstance, "testClassInstance");
+        this.testInstances = testClassInstance;
+        return this;
+    }
+
+    @Deprecated
+    @Override
+    public MockitoSessionBuilder initMocks(Object testClassInstance) {
+        if (testClassInstance == null) {
+            testClassInstance = new Object();
+        }
+
+        testInstances = singletonList(testClassInstance);
+
         return this;
     }
 
     @Override
     public MockitoSessionBuilder strictness(Strictness strictness) {
-        checkNotNull(strictness,"strictness");
+        if (strictness==null){
+            strictness = STRICT_STUBS;
+        }
         this.strictness = strictness;
         return this;
     }
 
     @Override
     public MockitoSession startMocking() {
-        //Configure default values
-
-
         return new DefaultMockitoSession(testInstances, strictness, new ConsoleMockitoLogger());
     }
 }
