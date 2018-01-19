@@ -19,13 +19,8 @@ class DefaultTestFinishedEvent implements TestFinishedEvent {
     }
 
     @Override
-    public Object getTestClassInstance() {
-        return testClassInstance;
-    }
-
-    @Override
-    public String getTestMethodName() {
-        return testMethodName;
+    public String getFullTestName() {
+        return testClassInstance.getClass().getSimpleName() + "." + testMethodName;
     }
 
     @Override

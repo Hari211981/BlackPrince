@@ -19,11 +19,7 @@ public class DefaultTestFinishedEvent implements TestFinishedEvent {
         return testFailure;
     }
 
-    public Object getTestClassInstance() {
-        return testClassInstance;
-    }
-
-    public String getTestMethodName() {
-        return testMethodName;
+    public String getFullTestName() {
+        return testClassInstance.getClass().getSimpleName() + "." + testMethodName;
     }
 }

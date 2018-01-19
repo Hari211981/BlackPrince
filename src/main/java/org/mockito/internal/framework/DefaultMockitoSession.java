@@ -48,11 +48,12 @@ public class DefaultMockitoSession implements MockitoSession {
             public Throwable getFailure() {
                 return null;
             }
-            public Object getTestClassInstance() {
-                return testClassInstances.get(0);
-            }
-            public String getTestMethodName() {
-                return null;
+            public String getFullTestName() {
+                StringBuilder fullName = new StringBuilder();
+                for (Object instance : testClassInstances) {
+                    fullName.append(instance.getClass().getSimpleName());
+                }
+                return fullName.toString();
             }
         });
 

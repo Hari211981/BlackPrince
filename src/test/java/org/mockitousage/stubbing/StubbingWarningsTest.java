@@ -66,7 +66,7 @@ public class StubbingWarningsTest {
         //because it was simpler to implement. This can be improved given we put priority to improve the warnings.
         //then
         assertEquals(filterLineNo(
-            "[MockitoHint] StubbingWarningsTest.null (see javadoc for MockitoHint):\n" +
+            "[MockitoHint] StubbingWarningsTest (see javadoc for MockitoHint):\n" +
             "[MockitoHint] 1. Unused -> at org.mockitousage.stubbing.StubbingWarningsTest.stubbing_argument_mismatch(StubbingWarningsTest.java:0)\n"),
                 filterLineNo(logger.getLoggedInfo()));
     }
@@ -79,7 +79,7 @@ public class StubbingWarningsTest {
 
         //then
         assertEquals(filterLineNo(
-            "[MockitoHint] StubbingWarningsTest.null (see javadoc for MockitoHint):\n" +
+            "[MockitoHint] StubbingWarningsTest (see javadoc for MockitoHint):\n" +
             "[MockitoHint] 1. Unused -> at org.mockitousage.stubbing.StubbingWarningsTest.unused_stubbing(StubbingWarningsTest.java:0)\n"),
                 filterLineNo(logger.getLoggedInfo()));
     }

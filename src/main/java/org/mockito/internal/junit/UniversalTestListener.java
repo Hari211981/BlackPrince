@@ -60,7 +60,7 @@ public class UniversalTestListener implements MockitoTestListener {
     }
 
     private static void emitWarnings(MockitoLogger logger, TestFinishedEvent event, Collection<Object> mocks) {
-        String testName = event.getTestClassInstance().getClass().getSimpleName() + "." + event.getTestMethodName();
+        String testName = event.getFullTestName();
         if (event.getFailure() != null) {
             //print stubbing mismatches only when there is a test failure
             //to avoid false negatives. Give hint only when test fails.

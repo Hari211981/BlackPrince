@@ -29,10 +29,9 @@ public class MismatchReportingTestListener implements MockitoTestListener {
         //TODO make it better, it's easy to forget to clean up mocks and we still create new instance of list that nobody will read, it's also duplicated
         mocks = new LinkedList<Object>();
 
-        String testName = event.getTestClassInstance().getClass().getSimpleName() + "." + event.getTestMethodName();
         if (event.getFailure() != null) {
             //print unused stubbings only when test succeeds to avoid reporting multiple problems and confusing users
-            new ArgMismatchFinder().getStubbingArgMismatches(createdMocks).format(testName, logger);
+            new ArgMismatchFinder().getStubbingArgMismatches(createdMocks).format(event.getFullTestName(), logger);
         }
     }
 

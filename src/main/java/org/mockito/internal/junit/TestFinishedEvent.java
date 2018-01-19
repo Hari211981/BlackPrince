@@ -8,8 +8,6 @@ public interface TestFinishedEvent {
 
     Throwable getFailure();
 
-    Object getTestClassInstance();
-
-    String getTestMethodName();
+    String getFullTestName();
 
 }
