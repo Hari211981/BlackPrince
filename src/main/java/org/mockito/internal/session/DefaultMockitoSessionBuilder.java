@@ -32,18 +32,16 @@ public class DefaultMockitoSessionBuilder implements MockitoSessionBuilder {
     @Deprecated
     @Override
     public MockitoSessionBuilder initMocks(Object testClassInstance) {
-        if (testClassInstance == null) {
-            testClassInstance = new Object();
+        if (testClassInstance != null) {
+            testInstances = singletonList(testClassInstance);
         }
-
-        testInstances = singletonList(testClassInstance);
 
         return this;
     }
 
     @Override
     public MockitoSessionBuilder strictness(Strictness strictness) {
-        if (strictness==null){
+        if (strictness == null){
             strictness = STRICT_STUBS;
         }
         this.strictness = strictness;
